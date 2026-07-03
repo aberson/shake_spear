@@ -483,6 +483,7 @@ mint issues) → `/plan-expedite` → `/build-phase`.
 - **Produces:** `tests/test_smoke_e2e.py`
 - **Done when:** Smoke test passes in CI-conditions (`uv run pytest tests/test_smoke_e2e.py`) in under ~60s; full gates pass
 - **Depends on:** 6, 7, 8, 9, 10, 11
+- **Status:** DONE (2026-07-03)
 
 ### Step 13: Committed sample story
 - **Problem:** Generate `projects/example_kids_story/` VIA the real CLI (`ss new-story "Example Kids Story" --slug example_kids_story --genre kids --mode playful --no-git`), then fill it as a worked example: completed story bible, 2 characters, 2 world elements, 2 scene cards, one short (~300-word) original example draft, 1 session log, regenerated index, one recap run. Content must be original, non-personal, publishable (this lands in the public repo).

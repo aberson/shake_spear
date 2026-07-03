@@ -18,34 +18,11 @@ from pathlib import Path
 
 import pytest
 
+from conftest import STORY_FILES, SUBFOLDERS
 from shake_spear.cli import main
 from shake_spear.utils import parse_frontmatter
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-
-SUBFOLDERS = [
-    "characters",
-    "world",
-    "scenes",
-    "drafts",
-    "sessions",
-    "feedback",
-    "revisions",
-    "prompts",
-    "exports",
-]
-
-STORY_FILES = [
-    "README.md",
-    "AGENTS.md",
-    "CLAUDE.md",
-    "story_bible.md",
-    "active_state.md",
-    "continuity.md",
-    "decisions.md",
-    "index.md",
-    ".gitignore",
-]
 
 # kebab wrapper names derived from the real skills/ dir (README excluded).
 EXPECTED_WRAPPERS = {

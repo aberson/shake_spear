@@ -22,6 +22,34 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 #: The slug ``new-story`` derives from the shared story fixture's title.
 SLUG = "kids_space_bakery"
 
+#: The nine story subfolders every scaffold must create (plan §3.1) — single
+#: definition shared by the scaffold + smoke suites.
+SUBFOLDERS = [
+    "characters",
+    "world",
+    "scenes",
+    "drafts",
+    "sessions",
+    "feedback",
+    "revisions",
+    "prompts",
+    "exports",
+]
+
+#: The nine root story files every scaffold must create (plan §3.1) — single
+#: definition shared by the scaffold + smoke suites.
+STORY_FILES = [
+    "README.md",
+    "AGENTS.md",
+    "CLAUDE.md",
+    "story_bible.md",
+    "active_state.md",
+    "continuity.md",
+    "decisions.md",
+    "index.md",
+    ".gitignore",
+]
+
 
 @pytest.fixture()
 def workshop(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
