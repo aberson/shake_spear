@@ -443,6 +443,7 @@ mint issues) → `/plan-expedite` → `/build-phase`.
 - **Produces:** `src/shake_spear/session.py` (partial), updated `cli.py`, `tests/test_session.py`
 - **Done when:** `ss session` creates a correctly named+filled log; second same-day same-type run gets `_b`; `ss daily` = freewrite/15min; gates pass
 - **Depends on:** 6
+- **Status:** DONE (2026-07-03)
 
 ### Step 9: Indexer — `ss index`
 - **Problem:** Implement `indexer.py` index per §4: scan the story's markdown (excluding dot-directories `.claude/`, `.git/`), extract frontmatter metadata (fallbacks per §3.3), regenerate `index.md` with the seed §11 sections + recently-modified (top 10 mtime). `index.md` is derived — overwrite freely. Tests: fixture story built via the real CLI creators, assert sections, entries, fallback behavior for frontmatter-less files.

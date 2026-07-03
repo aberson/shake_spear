@@ -163,6 +163,20 @@ def test_parse_bare_cr_input_normalized() -> None:
     assert parse_frontmatter("---\rkey: value\r---\r") == {"key": "value"}
 
 
+def test_split_no_frontmatter_body_normalized() -> None:
+    """Normalization covers ALL paths: a no-frontmatter CRLF/CR input must
+    come back LF-only too, so every body consumer sees LF-only text."""
+    data, body = split_frontmatter("# Heading\r\nProse line.\r\nbare\rcr\r\n")
+    assert data == {}
+    assert body == "# Heading\nProse line.\nbare\ncr\n"
+
+
+def test_split_unterminated_block_body_normalized() -> None:
+    data, body = split_frontmatter("---\r\nkey: value\r\nno closing delimiter\r\n")
+    assert data == {}
+    assert body == "---\nkey: value\nno closing delimiter\n"
+
+
 def test_parse_key_whitespace_stripped() -> None:
     """Keys with stray whitespace (trailing space before the colon, indentation) parse."""
     text = "---\ntitle : Spaced Out\n  indented: leading space\n---\n"

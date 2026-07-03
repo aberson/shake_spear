@@ -2,9 +2,9 @@
 
 All tests go through the production CLI entry point — ``cli.main()``
 in-process plus true ``python -m shake_spear`` subprocesses. The tmp workshop
-comes from the shared ``workshop`` fixture (``conftest.py``, real templates/
-skills/skeleton); the story fixture is scaffolded via the real ``new-story``
-command. No mocks — the filesystem is the real dependency.
+and the scaffolded story (slug ``SLUG``) come from the shared fixtures in
+``conftest.py`` (real templates/skills/skeleton, real ``new-story`` run).
+No mocks — the filesystem is the real dependency.
 """
 
 from __future__ import annotations
@@ -16,10 +16,9 @@ from pathlib import Path
 
 import pytest
 
+from conftest import SLUG
 from shake_spear.cli import main
 from shake_spear.utils import parse_frontmatter, split_frontmatter
-
-SLUG = "kids_space_bakery"
 
 #: (command, story subfolder, frontmatter field == template placeholder,
 #:  frontmatter type, template default status) — the plan §4 creator rows.
@@ -28,13 +27,6 @@ CREATORS = [
     ("character", "characters", "name", "character", "active"),
     ("world", "world", "name", "world_element", "active"),
 ]
-
-
-@pytest.fixture()
-def story(workshop: Path) -> Path:
-    """A real story scaffolded through the production CLI (``--no-git``)."""
-    assert main(["new-story", "Kids Space Bakery", "--genre", "kids", "--no-git"]) == 0
-    return workshop / "projects" / SLUG
 
 
 # ---------------------------------------------------------------------------

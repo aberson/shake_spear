@@ -21,13 +21,12 @@ from types import MappingProxyType
 
 from shake_spear.utils import (
     UsageError,
-    find_workshop_root,
     reject_list_shaped,
     render_template,
-    require_workshop_root,
     resolve_project,
     safe_write,
     slugify,
+    templates_dir,
 )
 
 
@@ -56,22 +55,6 @@ SPECS: Mapping[str, CreatorSpec] = MappingProxyType(
 )
 
 
-def _templates_dir(story_root: Path) -> Path:
-    """The workshop ``templates/`` dir for this story (story walk-up, cwd fallback).
-
-    A story under ``projects/`` walks up to its own workshop; a story given as
-    an absolute path outside any workshop falls back to the cwd's workshop
-    (raising the shared not-a-workshop :class:`UsageError` when neither works).
-    """
-    root = find_workshop_root(story_root)
-    if root is None:
-        root = require_workshop_root()
-    templates = root / "templates"
-    if not templates.is_dir():
-        raise UsageError(f"missing templates directory: {templates}")
-    return templates
-
-
 def create_entity(
     kind: str, story_root: Path, value: str, *, force: bool = False
 ) -> tuple[Path, list[Path]]:
@@ -84,7 +67,7 @@ def create_entity(
     spec = SPECS[kind]
     reject_list_shaped(value, spec.placeholder)
     slug = slugify(value)
-    template_path = _templates_dir(story_root) / spec.template
+    template_path = templates_dir(story_root) / spec.template
     if not template_path.is_file():
         raise UsageError(f"missing template: {template_path}")
     content = render_template(template_path, {spec.placeholder: value})

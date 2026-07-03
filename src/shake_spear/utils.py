@@ -14,6 +14,8 @@ Single source of truth for the behaviors every other module imports:
 - :func:`reject_list_shaped` — the one guard against ``[bracketed]`` operator
   input that would round-trip out of frontmatter as a LIST (Appendix D).
 - :func:`render_template` — ``{{placeholder}}`` replacement, no template engine.
+- :func:`templates_dir` — the workshop ``templates/`` dir for a story root
+  (shared by ``creators`` and ``session``; hoisted per Step-7 review guidance).
 
 All file I/O here uses ``encoding="utf-8"`` and ``newline="\\n"`` (no BOM, no
 CRLF — plan §3.4).
@@ -41,6 +43,7 @@ __all__ = [
     "safe_write",
     "slugify",
     "split_frontmatter",
+    "templates_dir",
     "validate_slug",
 ]
 
@@ -136,13 +139,17 @@ def split_frontmatter(text: str) -> tuple[Frontmatter, str]:
     whitespace first — external editors add stray spaces); a value shaped
     ``[a, b]`` is a list of stripped strings (empty brackets → ``[]``);
     anything else is a plain stripped string. Malformed lines are skipped
-    silently. Absent (or unterminated) frontmatter → ``({}, text)``.
+    silently. Absent (or unterminated) frontmatter → ``({}, normalized text)``.
 
-    Input newlines are normalized (``\\r\\n``/``\\r`` → ``\\n``) so CRLF files
-    from external editors parse identically; WRITES elsewhere stay LF-only.
+    Input newlines are normalized (``\\r\\n``/``\\r`` → ``\\n``) on ALL paths —
+    including no-frontmatter and unterminated inputs — so CRLF files from
+    external editors parse identically AND every consumer of the returned body
+    (session logs, indexer, recap) sees LF-only text; WRITES elsewhere stay
+    LF-only (plan §3.4).
     """
-    lines = text.replace("\r\n", "\n").replace("\r", "\n").split("\n")
-    if not lines or lines[0] != "---":
+    text = text.replace("\r\n", "\n").replace("\r", "\n")
+    lines = text.split("\n")
+    if lines[0] != "---":
         return {}, text
     try:
         end = lines.index("---", 1)
@@ -354,6 +361,23 @@ def resolve_project(arg: str | None, cwd: Path) -> Path:
             "create one with: ss new-story"
         )
     return story
+
+
+def templates_dir(story_root: Path) -> Path:
+    """The workshop ``templates/`` dir for this story (story walk-up, cwd fallback).
+
+    A story under ``projects/`` walks up to its own workshop; a story given as
+    an absolute path outside any workshop falls back to the cwd's workshop
+    (raising the shared not-a-workshop :class:`UsageError` when neither works).
+    A found root without a ``templates/`` directory is a :class:`UsageError`.
+    """
+    root = find_workshop_root(story_root)
+    if root is None:
+        root = require_workshop_root()
+    templates = root / "templates"
+    if not templates.is_dir():
+        raise UsageError(f"missing templates directory: {templates}")
+    return templates
 
 
 def render_template(template_path: Path, context: dict[str, str]) -> str:

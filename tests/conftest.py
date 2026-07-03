@@ -3,7 +3,9 @@
 No mocks anywhere — the filesystem is the real dependency. ``workshop`` copies
 the actual ``templates/``, ``skills/``, root ``.claude/skills`` wrappers, and
 ``projects/_template/`` skeleton into ``tmp_path`` and chdirs inside, so every
-test drives the production CLI against real content.
+test drives the production CLI against real content. ``story`` (slug
+:data:`SLUG`) is scaffolded inside it through the production ``new-story``
+command — the single definition shared by the creator + session suites.
 """
 
 from __future__ import annotations
@@ -13,7 +15,12 @@ from pathlib import Path
 
 import pytest
 
+from shake_spear.cli import main
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
+
+#: The slug ``new-story`` derives from the shared story fixture's title.
+SLUG = "kids_space_bakery"
 
 
 @pytest.fixture()
@@ -26,3 +33,10 @@ def workshop(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
         shutil.copytree(REPO_ROOT / rel, root / rel)
     monkeypatch.chdir(root)
     return root
+
+
+@pytest.fixture()
+def story(workshop: Path) -> Path:
+    """A real story scaffolded through the production CLI (``--no-git``)."""
+    assert main(["new-story", "Kids Space Bakery", "--genre", "kids", "--no-git"]) == 0
+    return workshop / "projects" / SLUG

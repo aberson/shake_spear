@@ -13,7 +13,7 @@ import sys
 from collections.abc import Callable, Sequence
 from typing import NoReturn
 
-from shake_spear import __version__, creators, scaffold
+from shake_spear import __version__, creators, scaffold, session
 from shake_spear.utils import RefuseError, UsageError
 
 PROG = "ss"
@@ -107,6 +107,50 @@ def build_parser() -> argparse.ArgumentParser:
             help="overwrite an existing file (a timestamped .bak- backup is kept)",
         )
         creator.set_defaults(func=creator_funcs[kind])
+
+    project_help = (
+        "optional story project: a bare slug, projects/<slug>, or an absolute path "
+        "(omit it when the current directory is inside a story)"
+    )
+
+    session_cmd = subparsers.add_parser(
+        "session",
+        help="create sessions/<date>_<type>_<minutes>min.md from templates/session_log.md",
+        description=(
+            "Create a dated session log with the frontmatter filled, a summary pulled "
+            "from active_state.md, and links to the type-relevant shared skills. A "
+            "same-day collision appends _b.._z instead of refusing. Put flags after "
+            "the project, e.g.: ss session kids_space_bakery --type scene --minutes 45"
+        ),
+    )
+    session_cmd.add_argument("project", nargs="?", metavar="PROJECT", help=project_help)
+    session_cmd.add_argument(
+        "--type",
+        default=session.DEFAULT_TYPE,
+        help=(
+            f"session type (default: {session.DEFAULT_TYPE}); known types: "
+            f"{', '.join(session.KNOWN_TYPES)}; free-form values are accepted "
+            "and slugified into the filename"
+        ),
+    )
+    session_cmd.add_argument(
+        "--minutes",
+        type=int,
+        default=session.DEFAULT_MINUTES,
+        help=f"planned session length in minutes, positive (default: {session.DEFAULT_MINUTES})",
+    )
+    session_cmd.set_defaults(func=session.cmd_session)
+
+    daily = subparsers.add_parser(
+        "daily",
+        help="daily freewrite log (sugar for: ss session PROJECT --type freewrite --minutes 15)",
+        description=(
+            "Create today's freewrite session log - the same code path as "
+            "ss session PROJECT --type freewrite --minutes 15."
+        ),
+    )
+    daily.add_argument("project", nargs="?", metavar="PROJECT", help=project_help)
+    daily.set_defaults(func=session.cmd_daily)
 
     return parser
 
