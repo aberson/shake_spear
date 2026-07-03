@@ -403,6 +403,7 @@ mint issues) → `/plan-expedite` → `/build-phase`.
 - **Produces:** 8 files under `skills/`
 - **Done when:** A pytest check asserts: all 8 files exist; each skill has the six skeleton headings; `skills/README.md` contains a heading for each of the three invocation contexts (Claude Code slash wrappers, plain assistant paste/reference, inside a story folder)
 - **Depends on:** 1
+- **Status:** DONE (2026-07-03)
 
 ### Step 5: Root guides + Claude Code wrappers
 - **Problem:** Author root `CLAUDE.md` and `AGENTS.md` per seed §6 (creative-writing-workshop framing, prose-is-not-code, never overwrite drafts, prefer new revision files, where skills/projects live, read-local-story-files-first, feedback/drafting defaults, no living-author imitation) and generate the 14 workshop-root `.claude/skills/<kebab-name>/SKILL.md` wrappers per §5.2 format. Keep root CLAUDE.md's `## Commands` and `## Stack` sections scrapable (descriptor contract §1).
