@@ -373,6 +373,7 @@ mint issues) → `/plan-expedite` → `/build-phase`.
 - **Produces:** `pyproject.toml`, `.gitignore`, `src/shake_spear/__init__.py`, `src/shake_spear/__main__.py`, `src/shake_spear/cli.py`, `tests/test_cli.py`, directory skeleton
 - **Done when:** `uv sync` succeeds; `uv run ss --version` and `uv run python -m shake_spear --version` exit 0; `uv run pytest` passes; `uv run ruff check .` and `uv run mypy src` clean
 - **Depends on:** none
+- **Status:** DONE (2026-07-03)
 
 ### Step 2: Templates
 - **Problem:** Author all 14 templates under `templates/` per §5.3, with bodies exactly per `docs/seed.md` §9 for the six fully-specified ones (story_bible, active_state incl. the `<!-- ss:recap:start/end -->` marker block, session_log, scene_card, character_profile, world_element) and same-style frontmatter+headings for the rest (story_project_README, local_AGENTS, local_CLAUDE, chapter_draft, feedback_note, revision_plan, continuity_log, decision_log). Use `{{placeholder}}` tokens per §5.3. local_CLAUDE/local_AGENTS content per seed §7 (read-first list, relative skill paths, default behaviors) plus a graceful-degradation line for standalone clones (§9). Pinned deltas per §5.3: story_bible frontmatter includes `mode:`; story_project_README includes a `## Tag conventions` section.

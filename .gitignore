@@ -8,6 +8,10 @@ build/
 .mypy_cache/
 .ruff_cache/
 
+# python packaging (uv.lock is committed on purpose — do not ignore it)
+*.egg-info/
+.coverage
+
 # transient pipeline state
 .plan-expedite-state
 .plan-expedite-state.*
