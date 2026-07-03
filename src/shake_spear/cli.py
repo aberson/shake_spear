@@ -166,6 +166,33 @@ def build_parser() -> argparse.ArgumentParser:
     index_cmd.add_argument("project", nargs="?", metavar="PROJECT", help=project_help)
     index_cmd.set_defaults(func=indexer.cmd_index)
 
+    recap_cmd = subparsers.add_parser(
+        "recap",
+        help='rewrite ONLY the ss:recap marker block in active_state.md ("start here next time")',
+        description=(
+            "Read active_state.md, continuity.md, the latest 3 session logs, and cheap "
+            "index counts; rewrite ONLY the text between the <!-- ss:recap:start --> and "
+            "<!-- ss:recap:end --> markers in active_state.md (the block is appended at "
+            "the end of the file if the markers are absent). Everything outside the "
+            "markers is preserved byte-for-byte. A fresh story still writes the block "
+            "with placeholders and exits 0."
+        ),
+    )
+    recap_cmd.add_argument("project", nargs="?", metavar="PROJECT", help=project_help)
+    recap_cmd.set_defaults(func=session.cmd_recap)
+
+    status_cmd = subparsers.add_parser(
+        "status",
+        help="print current status / scene / open loops / next tiny action (writes nothing)",
+        description=(
+            "Print (stdout only, writes nothing): Current status, Current scene or "
+            "chapter, Open loops, and Next tiny action from active_state.md, plus the "
+            "newest session filename."
+        ),
+    )
+    status_cmd.add_argument("project", nargs="?", metavar="PROJECT", help=project_help)
+    status_cmd.set_defaults(func=session.cmd_status)
+
     return parser
 
 

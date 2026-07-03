@@ -463,6 +463,7 @@ mint issues) → `/plan-expedite` → `/build-phase`.
 - **Produces:** `src/shake_spear/session.py` (complete), updated `cli.py`, `tests/test_recap_status.py`
 - **Done when:** Recap modifies only the marker block (test asserts byte equality outside it); status prints the §4 fields; gates pass
 - **Depends on:** 9
+- **Status:** DONE (2026-07-03)
 
 ### Step 11: Export — `ss export`
 - **Problem:** Complete `indexer.py`: `ss export` per §4 — concatenate `drafts/*.md` lexicographically into `exports/manuscript.md` (derived, regenerate freely) with `## <filename>` part headings; `--out` override; drafts are strictly read-only. Tests: ordering, heading insertion, empty-drafts behavior (friendly message, exit 0), drafts untouched (mtime/bytes).
