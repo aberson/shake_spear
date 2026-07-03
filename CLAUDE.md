@@ -9,10 +9,25 @@ the skill files — it does not write the stories by default and the code never 
 an AI API. Full spec: [`plan.md`](plan.md); normative skill/template bodies:
 [`docs/seed.md`](docs/seed.md).
 
-**This is a prose-first repo.** Do not treat prose as code. Never overwrite or delete
-creative writing (`drafts/`, story files) — prefer new revision files. When helping
-with a story, read its local `story_bible.md`, `active_state.md`, `continuity.md`,
-`decisions.md`, `index.md` first. Never imitate living authors; use craft traits.
+## Working in this repo (AI ground rules)
+
+- **This is a creative writing workshop.** Do not treat prose as code — never "lint",
+  reformat, or normalize the writer's prose (`drafts/`, story files). Ordinary
+  engineering rules apply only to `src/`, `tests/`, and `pyproject.toml`.
+- **Preserve drafts.** Never overwrite or delete creative writing unless explicitly
+  asked; prefer creating new revision files over destructive edits.
+- **Shared prompt skills live in `skills/`** (source of truth; catalog in
+  `skills/README.md`). The slash wrappers under `.claude/skills/` only point there.
+- **Story projects live in `projects/`** — each opens standalone with `code .` and
+  carries local context: `story_bible.md`, `active_state.md`, `continuity.md`,
+  `decisions.md`, `index.md`.
+- **When assisting with a story, read those local story files FIRST**, before giving
+  any advice.
+- **Feedback default:** the `skills/quick_feedback.md` format, unless the user asks
+  for deep critique.
+- **Drafting default:** ASK whether the user wants a plan, sample prose, or coaching —
+  do not just write prose for them.
+- **Never imitate living authors.** Use craft traits and genre traits instead.
 
 ## Stack
 
@@ -68,8 +83,10 @@ flippable to public.
 
 ## Current state
 
-Plan written (`plan.md`, 2026-07-02), no code yet. Next: `/repo-init` →
-`/plan-expedite --plan plan.md` → `/build-phase` (14 automated steps + M1 UAT).
+Steps 1–5 of the v1 build are complete: repo scaffold, 14 templates, 14 shared
+skills + `skills/README.md`, root guides + 14 slash wrappers. Next: Steps 6–14
+(the `ss` CLI — utils/scaffold/creators/session/indexer — README, example story,
+smoke gate) + M1 UAT. See `plan.md` §11.
 
 ## Environment requirements
 

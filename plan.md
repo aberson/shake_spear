@@ -413,6 +413,7 @@ mint issues) → `/plan-expedite` → `/build-phase`.
 - **Produces:** `CLAUDE.md`, `AGENTS.md`, `.claude/skills/*/SKILL.md` (14 wrappers)
 - **Done when:** A pytest check asserts one wrapper per `skills/*.md` (README excluded), each with `name`/`description`/`user-invocable: true` frontmatter and a body referencing its shared file's actual path
 - **Depends on:** 3, 4
+- **Status:** DONE (2026-07-03)
 
 ### Step 6: utils + `ss new-story` + `ss list-projects`
 - **Problem:** Implement `utils.py` (slugify per §3.2, frontmatter parse/render per §3.3, `safe_write(path, content, mode)` with explicit `mode="refuse"|"suffix"` semantics per §3.4, `find_story_root`/`find_workshop_root` walk-ups, `{{placeholder}}` rendering), populate `projects/_template/` (subfolder skeleton + `.gitkeep`s + story `.gitignore` ONLY — no story files, per §3.1), and `scaffold.py`: `ss new-story` per §4 contract (full anatomy per §3.1 incl. `prompts/`, all story files rendered from `templates/`, story-local `.claude/skills` wrapper generation, `git init` + initial commit, `--no-git`, `--force`, graceful no-git-on-PATH) and `ss list-projects`. Unit tests for every utils behavior + scaffold integration test through the real CLI entry point (production caller, not the module).
