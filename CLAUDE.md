@@ -83,10 +83,12 @@ flippable to public.
 
 ## Current state
 
-Steps 1–5 of the v1 build are complete: repo scaffold, 14 templates, 14 shared
-skills + `skills/README.md`, root guides + 14 slash wrappers. Next: Steps 6–14
-(the `ss` CLI — utils/scaffold/creators/session/indexer — README, example story,
-smoke gate) + M1 UAT. See `plan.md` §11.
+All 14 automated build steps are complete: repo scaffold, 14 templates, 14 shared
+skills + `skills/README.md`, root guides + slash wrappers, the full `ss` CLI
+(utils/scaffold/creators/session/indexer/recap/status/export), the end-to-end
+smoke gate, the committed example story, and the friendly root README +
+`.vscode/tasks.json`. Next: M1 operator UAT — the first real writing session
+(issue #15) — then `/repo-update`. See `plan.md` §11.
 
 ## Environment requirements
 

@@ -7,3 +7,5 @@
 # files and tests/test_sample_story.py asserts every one of its files is LF.
 .gitignore text eol=lf
 .gitkeep text eol=lf
+# .vscode/tasks.json is asserted UTF-8/LF/no-BOM by tests/test_readme.py
+*.json text eol=lf

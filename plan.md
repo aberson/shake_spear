@@ -503,6 +503,7 @@ mint issues) → `/plan-expedite` → `/build-phase`.
 - **Produces:** `README.md`, `.vscode/tasks.json`
 - **Done when:** A pytest check asserts `README.md` contains a heading for each of the 9 seed-§13 topics and the seed-§16 exercise text, and that `.vscode/tasks.json` parses as valid JSON with all listed tasks present; gates pass
 - **Depends on:** 13
+- **Status:** DONE (2026-07-03)
 
 ### Manual Steps
 
