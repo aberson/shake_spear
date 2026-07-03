@@ -7,6 +7,8 @@ Single source of truth for the behaviors every other module imports:
   — the hand-rolled frontmatter grammar (plan §3.3, Appendix D).
 - :func:`safe_write` — the creative-safety choke point with explicit
   ``mode="refuse" | "suffix"`` semantics (plan §3.4).
+- :func:`write_text` — the plain overwrite seam for DERIVED artifacts only
+  (``index.md``, ``exports/manuscript.md`` — the plan §3.4 exceptions).
 - :func:`find_workshop_root` / :func:`find_story_root` — cwd walk-up detection
   — plus :func:`require_workshop_root` (raise-on-missing variant) and
   :func:`resolve_project` (the §4 optional-PROJECT-argument contract, shared
@@ -45,6 +47,7 @@ __all__ = [
     "split_frontmatter",
     "templates_dir",
     "validate_slug",
+    "write_text",
 ]
 
 #: Parsed frontmatter mapping. Values are plain strings or lists of strings —
@@ -205,6 +208,17 @@ def _write_text(path: Path, content: str, exclusive: bool = False) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("x" if exclusive else "w", encoding="utf-8", newline="\n") as handle:
         handle.write(content)
+
+
+def write_text(path: Path, content: str) -> None:
+    """Plain overwrite for DERIVED artifacts only (plan §3.4 exception list).
+
+    UTF-8, LF, parents created — no refuse/suffix policy, no ``--force``, no
+    ``.bak-`` backup, because the target is regenerated output (``index.md``,
+    ``exports/manuscript.md``), never operator-authored content. Named
+    entities and dated logs must go through :func:`safe_write` instead.
+    """
+    _write_text(path, content)
 
 
 def _write_backup(path: Path) -> Path:

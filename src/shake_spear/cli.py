@@ -13,7 +13,7 @@ import sys
 from collections.abc import Callable, Sequence
 from typing import NoReturn
 
-from shake_spear import __version__, creators, scaffold, session
+from shake_spear import __version__, creators, indexer, scaffold, session
 from shake_spear.utils import RefuseError, UsageError
 
 PROG = "ss"
@@ -151,6 +151,20 @@ def build_parser() -> argparse.ArgumentParser:
     )
     daily.add_argument("project", nargs="?", metavar="PROJECT", help=project_help)
     daily.set_defaults(func=session.cmd_daily)
+
+    index_cmd = subparsers.add_parser(
+        "index",
+        help="regenerate the derived index.md (sections + recently-modified, no --force)",
+        description=(
+            "Regenerate <story>/index.md from the story's markdown files: per-file "
+            "sections (story files, characters, world elements, scenes, drafts, "
+            "sessions, feedback, revisions) plus the top-10 recently-modified block. "
+            "index.md is a derived artifact - regenerated freely, never backed up. "
+            "Dot-directories (.claude/, .git/) and exports/ are not scanned."
+        ),
+    )
+    index_cmd.add_argument("project", nargs="?", metavar="PROJECT", help=project_help)
+    index_cmd.set_defaults(func=indexer.cmd_index)
 
     return parser
 

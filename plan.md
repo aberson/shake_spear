@@ -453,6 +453,7 @@ mint issues) → `/plan-expedite` → `/build-phase`.
 - **Produces:** `src/shake_spear/indexer.py` (partial), updated `cli.py`, `tests/test_indexer.py`
 - **Done when:** Index lists every fixture file under the right section with title/type/status/path/first-line; frontmatter-less file still indexed; gates pass
 - **Depends on:** 7, 8
+- **Status:** DONE (2026-07-03)
 
 ### Step 10: Recap + status — `ss recap` / `ss status`
 - **Problem:** Complete `session.py`: `ss recap` per §4 (reads active_state/continuity/latest-3-sessions/index data; rewrites ONLY the marker block per §3.4, appends block if markers absent, preserves all other bytes) and `ss status` (stdout print, writes nothing). Tests: marker-block surgical replacement (byte-identical outside markers), marker-absent append path, status output fields.

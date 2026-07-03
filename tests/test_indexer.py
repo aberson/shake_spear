@@ -1,0 +1,282 @@
+"""Integration tests for ``ss index`` (plan §11 Step 9).
+
+All tests go through the production CLI entry point — ``cli.main()``
+in-process plus a true ``python -m shake_spear`` subprocess — against the
+shared ``workshop``/``story`` fixtures (real templates/skills/skeleton, real
+``new-story`` run). Fixture content is built via the REAL creator commands
+(``ss scene`` / ``ss character`` / ``ss world`` / ``ss session``); hand-written
+files cover the frontmatter-less / CRLF / exclusion paths.
+"""
+
+from __future__ import annotations
+
+import os
+import re
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+import pytest
+
+from conftest import SLUG
+from shake_spear.cli import main
+
+#: Seed §11 section order — hardcoded here (not imported) so a drift in the
+#: module's constants fails the suite instead of silently passing.
+SECTION_ORDER = (
+    "Story files",
+    "Characters",
+    "World elements",
+    "Scenes",
+    "Drafts",
+    "Sessions",
+    "Feedback",
+    "Revisions",
+    "Recently modified files",
+)
+
+#: The 7 root story files a fresh ``new-story`` scaffold carries (plan §3.1).
+ROOT_FILES = (
+    "AGENTS.md",
+    "CLAUDE.md",
+    "README.md",
+    "active_state.md",
+    "continuity.md",
+    "decisions.md",
+    "story_bible.md",
+)
+
+
+def index_text(story: Path) -> str:
+    return (story / "index.md").read_text(encoding="utf-8")
+
+
+def section_body(text: str, section: str) -> str:
+    """The lines between ``## <section>`` and the next section heading."""
+    match = re.search(rf"^## {re.escape(section)}\n(.*?)(?=^## |\Z)", text, re.M | re.S)
+    assert match, f"missing section: {section}"
+    return match.group(1)
+
+
+# ---------------------------------------------------------------------------
+# full cycle: real creators -> index -> sections, entries, order (plan §4)
+# ---------------------------------------------------------------------------
+
+
+def test_full_cycle_lists_created_files_under_right_sections(story: Path) -> None:
+    assert main(["scene", SLUG, "The Flour Heist"]) == 0
+    assert main(["character", SLUG, "Nova Crumb"]) == 0
+    assert main(["world", SLUG, "Orbit Bakery"]) == 0
+    assert main(["session", SLUG]) == 0
+    assert main(["index", SLUG]) == 0
+    text = index_text(story)
+
+    assert (
+        "- **The Flour Heist** — type: scene, status: planned — `scenes/the_flour_heist.md` — Scene"
+    ) in section_body(text, "Scenes")
+    assert (
+        "- **Nova Crumb** — type: character, status: active — "
+        "`characters/nova_crumb.md` — Character"
+    ) in section_body(text, "Characters")
+    assert (
+        "- **Orbit Bakery** — type: world_element, status: active — "
+        "`world/orbit_bakery.md` — World Element"
+    ) in section_body(text, "World elements")
+
+    # Session log: no title/name in frontmatter -> first-H1 fallback.
+    log_rel = next((story / "sessions").glob("*_scene_45min.md")).name
+    assert (
+        f"- **Writing Session** — type: session_log, status: open — "
+        f"`sessions/{log_rel}` — Writing Session"
+    ) in section_body(text, "Sessions")
+
+    story_files = section_body(text, "Story files")
+    for name in ROOT_FILES:
+        assert f"`{name}`" in story_files, f"root file missing from Story files: {name}"
+
+    for empty in ("Drafts", "Feedback", "Revisions"):
+        assert section_body(text, empty).strip() == "(none)"
+
+    recent = section_body(text, "Recently modified files")
+    assert "`scenes/the_flour_heist.md`" in recent
+    assert re.search(r"- `characters/nova_crumb\.md` \(\d{4}-\d{2}-\d{2}\)", recent)
+
+
+def test_sections_always_present_in_seed_order(story: Path) -> None:
+    assert main(["index", SLUG]) == 0
+    headings = [line for line in index_text(story).splitlines() if line.startswith("## ")]
+    assert headings == [f"## {section}" for section in SECTION_ORDER]
+
+
+def test_fresh_story_folder_sections_all_none_root_files_listed(story: Path) -> None:
+    assert main(["index", SLUG]) == 0
+    text = index_text(story)
+    assert text.startswith("# Project Index\n")
+    assert "Derived file" in text
+    for section in SECTION_ORDER[1:-1]:  # every folder section of a fresh story
+        assert section_body(text, section).strip() == "(none)"
+    story_files = section_body(text, "Story files")
+    assert story_files.count("- **") == len(ROOT_FILES)
+    recent = section_body(text, "Recently modified files")
+    assert recent.count("- `") == len(ROOT_FILES)
+
+
+# ---------------------------------------------------------------------------
+# fallbacks: frontmatter-less files, H1 titles, unmapped folders (plan §3.3)
+# ---------------------------------------------------------------------------
+
+
+def test_frontmatterless_draft_indexed_by_stem_and_first_line(story: Path) -> None:
+    (story / "drafts" / "chapter1.md").write_text(
+        "The bakery drifted past the third moon.\n\nMore prose follows.\n",
+        encoding="utf-8",
+    )
+    assert main(["index", SLUG]) == 0
+    assert (
+        "- **chapter1** — type: -, status: - — `drafts/chapter1.md` — "
+        "The bakery drifted past the third moon."
+    ) in section_body(index_text(story), "Drafts")
+
+
+def test_prompts_file_lands_under_story_files_with_h1_title(story: Path) -> None:
+    (story / "prompts" / "idea.md").write_text("# Big Idea\n\nA seed prompt.\n", encoding="utf-8")
+    assert main(["index", SLUG]) == 0
+    assert ("- **Big Idea** — type: -, status: - — `prompts/idea.md` — Big Idea") in section_body(
+        index_text(story), "Story files"
+    )
+
+
+def test_empty_file_gets_empty_summary(story: Path) -> None:
+    (story / "drafts" / "blank.md").write_text("", encoding="utf-8")
+    assert main(["index", SLUG]) == 0
+    assert ("- **blank** — type: -, status: - — `drafts/blank.md` — (empty)") in section_body(
+        index_text(story), "Drafts"
+    )
+
+
+def test_long_first_line_truncated_to_80_chars(story: Path) -> None:
+    (story / "drafts" / "long.md").write_text("x" * 200 + "\n", encoding="utf-8")
+    assert main(["index", SLUG]) == 0
+    entry = next(
+        line
+        for line in section_body(index_text(story), "Drafts").splitlines()
+        if "`drafts/long.md`" in line
+    )
+    summary = entry.rsplit("— ", 1)[1]
+    assert summary == "x" * 77 + "..."
+    assert len(summary) == 80
+
+
+# ---------------------------------------------------------------------------
+# exclusions: dot-dirs, exports/, index.md itself (plan §4)
+# ---------------------------------------------------------------------------
+
+
+def test_dot_dirs_exports_and_index_itself_excluded(story: Path) -> None:
+    assert (story / ".claude" / "skills").is_dir(), "fixture must carry wrapper dot-dir"
+    (story / "exports" / "manuscript.md").write_text("derived output\n", encoding="utf-8")
+    assert main(["index", SLUG]) == 0
+    text = index_text(story)
+    assert ".claude" not in text
+    assert "SKILL.md" not in text
+    assert "exports/" not in text
+    assert "manuscript.md" not in text
+    assert "`index.md`" not in text
+
+
+# ---------------------------------------------------------------------------
+# derived-artifact semantics: overwrite freely, idempotent, LF-only (plan §3.4)
+# ---------------------------------------------------------------------------
+
+
+def test_existing_index_replaced_without_force_and_without_bak(story: Path) -> None:
+    stub = index_text(story)  # the new-story scaffold stub
+    assert main(["index", SLUG]) == 0  # NOT exit 2, no --force flag exists
+    assert index_text(story) != stub
+    assert list(story.rglob("*.bak-*")) == [], "derived overwrite must not create backups"
+
+
+def test_index_twice_is_byte_identical(story: Path) -> None:
+    assert main(["scene", SLUG, "Landing Day"]) == 0
+    assert main(["index", SLUG]) == 0
+    first = (story / "index.md").read_bytes()
+    assert main(["index", SLUG]) == 0
+    assert (story / "index.md").read_bytes() == first
+    # Guard the no-timestamp invariant directly: same-second reruns would be
+    # byte-identical even WITH a generation timestamp, so also assert no
+    # clock-shaped content exists at all (indexer.py documents why).
+    assert not re.search(r"\b\d{2}:\d{2}(:\d{2})?\b", first.decode("utf-8"))
+
+
+def test_crlf_source_file_yields_cr_free_index(story: Path) -> None:
+    (story / "drafts" / "windows.md").write_bytes(
+        b"---\r\ntitle: Windows Draft\r\nstatus: raw\r\n---\r\nFirst line from CRLF land.\r\n"
+    )
+    assert main(["index", SLUG]) == 0
+    raw = (story / "index.md").read_bytes()
+    assert b"\r" not in raw
+    assert raw[:1] != b"\xef", "no BOM"
+    assert (
+        "- **Windows Draft** — type: -, status: raw — `drafts/windows.md` — "
+        "First line from CRLF land."
+    ) in section_body(index_text(story), "Drafts")
+
+
+# ---------------------------------------------------------------------------
+# recently modified: mtime desc, top 10 (plan §4)
+# ---------------------------------------------------------------------------
+
+
+def test_recently_modified_orders_by_mtime_desc_capped_at_10(story: Path) -> None:
+    base = time.time()
+    for i in range(12):
+        draft = story / "drafts" / f"d{i:02d}.md"
+        draft.write_text(f"draft {i}\n", encoding="utf-8")
+        os.utime(draft, (base + i, base + i))  # d11 newest, strictly ordered
+    assert main(["index", SLUG]) == 0
+    lines = section_body(index_text(story), "Recently modified files").strip().splitlines()
+    assert len(lines) == 10
+    assert lines[0].startswith("- `drafts/d11.md` (")
+    assert lines[-1].startswith("- `drafts/d02.md` (")
+
+
+# ---------------------------------------------------------------------------
+# CLI contract: optional PROJECT, printed path (plan §4)
+# ---------------------------------------------------------------------------
+
+
+def test_project_omitted_cwd_inside_story(story: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.chdir(story / "scenes")  # deep inside: walk-up must find the story root
+    assert main(["index"]) == 0
+    assert index_text(story).startswith("# Project Index")
+
+
+def test_project_omitted_outside_story_exits_1(
+    workshop: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    assert main(["index"]) == 1
+    assert "no PROJECT given" in capsys.readouterr().err
+
+
+def test_prints_index_path(story: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    assert main(["index", SLUG]) == 0
+    assert capsys.readouterr().out.strip() == str(story / "index.md")
+
+
+# ---------------------------------------------------------------------------
+# true subprocess test through python -m shake_spear
+# ---------------------------------------------------------------------------
+
+
+def test_subprocess_index(workshop: Path, story: Path) -> None:
+    result = subprocess.run(
+        [sys.executable, "-m", "shake_spear", "index", SLUG],
+        cwd=workshop,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip() == str(story / "index.md")
+    assert index_text(story).startswith("# Project Index")
