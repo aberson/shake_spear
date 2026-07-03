@@ -166,6 +166,40 @@ def build_parser() -> argparse.ArgumentParser:
     index_cmd.add_argument("project", nargs="?", metavar="PROJECT", help=project_help)
     index_cmd.set_defaults(func=indexer.cmd_index)
 
+    export_cmd = subparsers.add_parser(
+        "export",
+        help="concatenate drafts/*.md into the derived exports/manuscript.md",
+        description=(
+            "Concatenate drafts/*.md (files only, lexicographic filename order) into "
+            "exports/manuscript.md, each part preceded by an '## <filename>' heading "
+            "with its frontmatter stripped so the manuscript reads as prose. The "
+            "default manuscript is a derived artifact - regenerated freely, never "
+            "backed up; drafts are strictly read-only (--out may not point inside "
+            "drafts/). An existing --out target other than the default exits 2 "
+            "unless --force. An empty drafts/ prints a friendly message and writes "
+            "nothing (exit 0)."
+        ),
+    )
+    export_cmd.add_argument("project", nargs="?", metavar="PROJECT", help=project_help)
+    export_cmd.add_argument(
+        "--out",
+        metavar="PATH",
+        help=(
+            "write the manuscript to PATH instead of <story>/exports/manuscript.md "
+            "(relative PATH resolves against the current directory; parents created); "
+            "may not point inside the story's drafts/ tree"
+        ),
+    )
+    export_cmd.add_argument(
+        "--force",
+        action="store_true",
+        help=(
+            "overwrite an existing --out target (a timestamped .bak- backup is kept); "
+            "the default exports/manuscript.md regenerates freely without it"
+        ),
+    )
+    export_cmd.set_defaults(func=indexer.cmd_export)
+
     recap_cmd = subparsers.add_parser(
         "recap",
         help='rewrite ONLY the ss:recap marker block in active_state.md ("start here next time")',
