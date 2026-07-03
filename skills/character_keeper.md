@@ -3,7 +3,7 @@
 ## Purpose
 
 Create and maintain character profiles that make scenes easier to write. A useful
-profile is not a census entry â€” it is the handful of pressures, contradictions, and
+profile is not a census entry — it is the handful of pressures, contradictions, and
 voice notes that tell the writer how this person moves through a scene.
 
 ## Use when
@@ -16,8 +16,8 @@ voice notes that tell the writer how this person moves through a scene.
 ## Inputs to read first
 
 - The character's profile in `characters/`, if one exists.
-- `continuity.md` â€” facts already established about this character.
-- `story_bible.md` â€” the central conflict and this character's place in it.
+- `continuity.md` — facts already established about this character.
+- `story_bible.md` — the central conflict and this character's place in it.
 - Recent files in `scenes/` and `drafts/` where the character appears.
 
 ## Process
@@ -46,8 +46,8 @@ voice notes that tell the writer how this person moves through a scene.
 4. After a scene, append new facts to Established facts instead of rewriting the
    profile from scratch. Date entries if the timeline matters.
 5. Flag contradictions between a scene and the profile. Sometimes the scene is right
-   and the profile should change â€” that is the writer's call, not yours.
-6. When asked "what would they do?", reason from want, fear, and contradiction â€” and
+   and the profile should change — that is the writer's call, not yours.
+6. When asked "what would they do?", reason from want, fear, and contradiction — and
    offer two options that are both in character, not one verdict.
 
 ## Output format
@@ -62,6 +62,6 @@ in-character options with the want/fear reasoning shown.
 - Fifty-field character sheets. Depth over census data; blanks are honest.
 - Inventing character facts the story has not established without marking them
   as proposals.
-- Flattening the contradiction â€” it is usually the most useful line in the profile.
+- Flattening the contradiction — it is usually the most useful line in the profile.
 - Voice notes so generic they fit anyone ("sarcastic, guarded").
 - Overwriting profile history. Append and annotate rather than erase.

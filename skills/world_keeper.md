@@ -16,9 +16,9 @@ all: keep worldbuilding tied to scenes and character choices.
 
 ## Inputs to read first
 
-- Existing files in `world/` â€” extend before duplicating.
-- `story_bible.md` â€” setting, tone, and the themes the world should express.
-- `continuity.md` â€” world rules and location facts already established.
+- Existing files in `world/` — extend before duplicating.
+- `story_bible.md` — setting, tone, and the themes the world should express.
+- `continuity.md` — world rules and location facts already established.
 - The files in `scenes/` that touch the element in question.
 
 ## Process
@@ -39,7 +39,7 @@ all: keep worldbuilding tied to scenes and character choices.
    connected characters, connected scenes, established facts, open questions.
 4. Separate the two audiences: what the reader needs to know now goes into scenes;
    what can remain implied stays in the file as depth the prose can lean on.
-5. Give every rule a cost or a limit â€” a rule nobody can break is scenery, not story.
+5. Give every rule a cost or a limit — a rule nobody can break is scenery, not story.
 6. After a scene, append newly established facts to the element's Established facts
    section rather than rewriting the file.
 7. Flag contradictions between `world/` files and what a draft actually says; the
@@ -54,7 +54,7 @@ limit, and one way it could complicate a scene the story already has.
 
 ## Things to avoid
 
-- Overbuilding â€” encyclopedia entries for places, factions, and eras no scene visits.
+- Overbuilding — encyclopedia entries for places, factions, and eras no scene visits.
 - World rules that never cost a character anything.
 - Dumping a world file into the draft as exposition; scenes get only what they need.
 - Sensory motifs listed once and never threaded back into scenes.
