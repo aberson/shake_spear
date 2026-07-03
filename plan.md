@@ -493,6 +493,7 @@ mint issues) → `/plan-expedite` → `/build-phase`.
 - **Produces:** `projects/example_kids_story/*` (committed)
 - **Done when:** Folder exists with filled files; `git status` shows it tracked (gitignore re-include works); `ss index example_kids_story` runs clean on it
 - **Depends on:** 12
+- **Status:** DONE (2026-07-03)
 
 ### Step 14: README + VS Code tasks
 - **Problem:** Author the friendly root `README.md` per seed §13 (all 9 numbered topics, example commands using `ss` + uv, the `code .` subproject flow, shared-skills usage, a short tag-conventions note) including the seed §16 first-use exercise verbatim as the recommended first session; and `.vscode/tasks.json` with tasks for `new-story` (prompted title), `session`, `index`, `recap`, `status`, `list-projects`, `export`, and `pytest`.

@@ -3,3 +3,7 @@
 # core.autocrlf=true checkouts cannot convert to CRLF.
 *.md text eol=lf
 *.py text eol=lf
+# The committed sample story (plan §11 Step 13) ships .gitignore/.gitkeep
+# files and tests/test_sample_story.py asserts every one of its files is LF.
+.gitignore text eol=lf
+.gitkeep text eol=lf
