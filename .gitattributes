@@ -1,0 +1,5 @@
+# All markdown (templates now, skills/*.md next step) is read at runtime with
+# newline="\n" (plan §3.4); CLAUDE.md pins LF for all I/O. Pin LF repo-wide so
+# core.autocrlf=true checkouts cannot convert to CRLF.
+*.md text eol=lf
+*.py text eol=lf

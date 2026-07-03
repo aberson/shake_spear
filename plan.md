@@ -383,6 +383,7 @@ mint issues) → `/plan-expedite` → `/build-phase`.
 - **Produces:** `templates/*.md` (14 files)
 - **Done when:** All 14 files exist; a pytest check asserts each has valid frontmatter per §3.3 grammar (or is intentionally frontmatter-free) and that `active_state.md` contains both recap markers
 - **Depends on:** 1
+- **Status:** DONE (2026-07-03)
 
 ### Step 3: Shared skills, part 1 (session + craft core)
 - **Problem:** Author `skills/immersive_session.md`, `scene_planner.md`, `quick_feedback.md`, `revision_passes.md`, `continuity_auditor.md`, `character_keeper.md`, `world_keeper.md` — content normative per `docs/seed.md` §8 (each with the uniform Purpose/Use when/Inputs to read first/Process/Output format/Things to avoid skeleton; immersive_session includes the 6-phase 45-minute flow and 8 modes; quick_feedback and scene_planner include their exact output formats).
