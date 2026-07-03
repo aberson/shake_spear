@@ -368,7 +368,7 @@ mint issues) → `/plan-expedite` → `/build-phase`.
 ### Step 1: Repo scaffold + packaging
 - **Problem:** Create the repo skeleton: `pyproject.toml` (uv-managed, Python 3.11+, `[project.scripts] ss = "shake_spear.cli:main"`, dev deps pytest/ruff/mypy), root `.gitignore` per §3.5 (junk + `projects/*` with `!projects/_template/` and `!projects/example_kids_story/` re-includes), `src/shake_spear/` package with `__init__.py` (`__version__`), a minimal `cli.py` where `ss --version` and `ss --help` work, and `__main__.py` so `python -m shake_spear` is equivalent (seed §5), empty `skills/ templates/ projects/_template/ tests/ docs/` directories (keep with `.gitkeep` where empty), and a stub `tests/test_cli.py` asserting `ss --version` and `python -m shake_spear --version` exit 0.
 - **Type:** code
-- **Issue:** #
+- **Issue:** #1
 - **Flags:** --reviewers auto --isolation worktree
 - **Produces:** `pyproject.toml`, `.gitignore`, `src/shake_spear/__init__.py`, `src/shake_spear/__main__.py`, `src/shake_spear/cli.py`, `tests/test_cli.py`, directory skeleton
 - **Done when:** `uv sync` succeeds; `uv run ss --version` and `uv run python -m shake_spear --version` exit 0; `uv run pytest` passes; `uv run ruff check .` and `uv run mypy src` clean
@@ -377,7 +377,7 @@ mint issues) → `/plan-expedite` → `/build-phase`.
 ### Step 2: Templates
 - **Problem:** Author all 14 templates under `templates/` per §5.3, with bodies exactly per `docs/seed.md` §9 for the six fully-specified ones (story_bible, active_state incl. the `<!-- ss:recap:start/end -->` marker block, session_log, scene_card, character_profile, world_element) and same-style frontmatter+headings for the rest (story_project_README, local_AGENTS, local_CLAUDE, chapter_draft, feedback_note, revision_plan, continuity_log, decision_log). Use `{{placeholder}}` tokens per §5.3. local_CLAUDE/local_AGENTS content per seed §7 (read-first list, relative skill paths, default behaviors) plus a graceful-degradation line for standalone clones (§9). Pinned deltas per §5.3: story_bible frontmatter includes `mode:`; story_project_README includes a `## Tag conventions` section.
 - **Type:** code
-- **Issue:** #
+- **Issue:** #2
 - **Flags:** --reviewers code --isolation worktree
 - **Produces:** `templates/*.md` (14 files)
 - **Done when:** All 14 files exist; a pytest check asserts each has valid frontmatter per §3.3 grammar (or is intentionally frontmatter-free) and that `active_state.md` contains both recap markers
@@ -386,7 +386,7 @@ mint issues) → `/plan-expedite` → `/build-phase`.
 ### Step 3: Shared skills, part 1 (session + craft core)
 - **Problem:** Author `skills/immersive_session.md`, `scene_planner.md`, `quick_feedback.md`, `revision_passes.md`, `continuity_auditor.md`, `character_keeper.md`, `world_keeper.md` — content normative per `docs/seed.md` §8 (each with the uniform Purpose/Use when/Inputs to read first/Process/Output format/Things to avoid skeleton; immersive_session includes the 6-phase 45-minute flow and 8 modes; quick_feedback and scene_planner include their exact output formats).
 - **Type:** code
-- **Issue:** #
+- **Issue:** #3
 - **Flags:** --reviewers code --isolation worktree
 - **Produces:** 7 files under `skills/`
 - **Done when:** A pytest check asserts: all 7 files exist; each contains all six skeleton headings; `immersive_session.md` contains the six session-phase labels and all 8 mode names; `scene_planner.md` and `quick_feedback.md` contain every line of their exact seed-§8 output-format blocks. (Prose quality is judged by the `--reviewers code` gate, not the Done-when.)
@@ -395,7 +395,7 @@ mint issues) → `/plan-expedite` → `/build-phase`.
 ### Step 4: Shared skills, part 2 (genre + meta) + skills README
 - **Problem:** Author `skills/story_bible_builder.md`, `dialogue_doctor.md`, `voice_and_taste.md`, `kids_story_mode.md`, `mystery_mode.md`, `recap_and_resume.md`, `prompt_smith.md` (content per `docs/seed.md` §8, same skeleton; voice_and_taste includes the operator-fillable taste sections and the no-living-authors rule) plus `skills/README.md` explaining how to invoke skills from Claude Code (slash wrappers), plain Claude/ChatGPT (paste or reference the file), and inside a story folder.
 - **Type:** code
-- **Issue:** #
+- **Issue:** #4
 - **Flags:** --reviewers code --isolation worktree
 - **Produces:** 8 files under `skills/`
 - **Done when:** A pytest check asserts: all 8 files exist; each skill has the six skeleton headings; `skills/README.md` contains a heading for each of the three invocation contexts (Claude Code slash wrappers, plain assistant paste/reference, inside a story folder)
@@ -404,7 +404,7 @@ mint issues) → `/plan-expedite` → `/build-phase`.
 ### Step 5: Root guides + Claude Code wrappers
 - **Problem:** Author root `CLAUDE.md` and `AGENTS.md` per seed §6 (creative-writing-workshop framing, prose-is-not-code, never overwrite drafts, prefer new revision files, where skills/projects live, read-local-story-files-first, feedback/drafting defaults, no living-author imitation) and generate the 14 workshop-root `.claude/skills/<kebab-name>/SKILL.md` wrappers per §5.2 format. Keep root CLAUDE.md's `## Commands` and `## Stack` sections scrapable (descriptor contract §1).
 - **Type:** code
-- **Issue:** #
+- **Issue:** #5
 - **Flags:** --reviewers code --isolation worktree
 - **Produces:** `CLAUDE.md`, `AGENTS.md`, `.claude/skills/*/SKILL.md` (14 wrappers)
 - **Done when:** A pytest check asserts one wrapper per `skills/*.md` (README excluded), each with `name`/`description`/`user-invocable: true` frontmatter and a body referencing its shared file's actual path
@@ -413,7 +413,7 @@ mint issues) → `/plan-expedite` → `/build-phase`.
 ### Step 6: utils + `ss new-story` + `ss list-projects`
 - **Problem:** Implement `utils.py` (slugify per §3.2, frontmatter parse/render per §3.3, `safe_write(path, content, mode)` with explicit `mode="refuse"|"suffix"` semantics per §3.4, `find_story_root`/`find_workshop_root` walk-ups, `{{placeholder}}` rendering), populate `projects/_template/` (subfolder skeleton + `.gitkeep`s + story `.gitignore` ONLY — no story files, per §3.1), and `scaffold.py`: `ss new-story` per §4 contract (full anatomy per §3.1 incl. `prompts/`, all story files rendered from `templates/`, story-local `.claude/skills` wrapper generation, `git init` + initial commit, `--no-git`, `--force`, graceful no-git-on-PATH) and `ss list-projects`. Unit tests for every utils behavior + scaffold integration test through the real CLI entry point (production caller, not the module).
 - **Type:** code
-- **Issue:** #
+- **Issue:** #6
 - **Flags:** --reviewers code --isolation worktree
 - **Produces:** `src/shake_spear/utils.py`, `scaffold.py`, updated `cli.py`, `projects/_template/*`, `tests/test_utils.py`, `tests/test_scaffold.py`
 - **Done when:** `uv run ss new-story "X" …` in a tmp workshop creates the complete §3.1 anatomy; re-run without `--force` exits 2; `--force` leaves a `.bak-`; `--no-git` skips git; all gates pass
@@ -422,7 +422,7 @@ mint issues) → `/plan-expedite` → `/build-phase`.
 ### Step 7: Creators — `ss scene` / `ss character` / `ss world`
 - **Problem:** Implement `creators.py` per §4: each command renders its template, fills frontmatter (title/name), writes via `safe_write(mode="refuse")` into the right subfolder, honors the optional-PROJECT cwd detection and `--force`. Tests through the CLI: creation, refused overwrite exit 2 on an existing target, `--force` overwrite leaves a `.bak-` copy, cwd-detection from inside a story folder.
 - **Type:** code
-- **Issue:** #
+- **Issue:** #7
 - **Flags:** --reviewers code --isolation worktree
 - **Produces:** `src/shake_spear/creators.py`, updated `cli.py`, `tests/test_creators.py`
 - **Done when:** All three commands produce correctly-named files with filled frontmatter in a scaffolded tmp story; refuse/`--force`/`.bak` exit-code tests pass; gates pass
@@ -431,7 +431,7 @@ mint issues) → `/plan-expedite` → `/build-phase`.
 ### Step 8: Sessions — `ss session` + `ss daily`
 - **Problem:** Implement `session.py` session/daily per §4: dated filename per §3.2 (`safe_write(mode="suffix")` for `_b` disambiguation), template render, active-state summary pull (Current status + Next tiny action sections), relative links to the type-relevant shared skills per the Appendix F mapping, type vocabulary with free-form fallback. Tests through the CLI incl. same-day collision and daily defaults.
 - **Type:** code
-- **Issue:** #
+- **Issue:** #8
 - **Flags:** --reviewers code --isolation worktree
 - **Produces:** `src/shake_spear/session.py` (partial), updated `cli.py`, `tests/test_session.py`
 - **Done when:** `ss session` creates a correctly named+filled log; second same-day same-type run gets `_b`; `ss daily` = freewrite/15min; gates pass
@@ -440,7 +440,7 @@ mint issues) → `/plan-expedite` → `/build-phase`.
 ### Step 9: Indexer — `ss index`
 - **Problem:** Implement `indexer.py` index per §4: scan the story's markdown (excluding dot-directories `.claude/`, `.git/`), extract frontmatter metadata (fallbacks per §3.3), regenerate `index.md` with the seed §11 sections + recently-modified (top 10 mtime). `index.md` is derived — overwrite freely. Tests: fixture story built via the real CLI creators, assert sections, entries, fallback behavior for frontmatter-less files.
 - **Type:** code
-- **Issue:** #
+- **Issue:** #9
 - **Flags:** --reviewers code --isolation worktree
 - **Produces:** `src/shake_spear/indexer.py` (partial), updated `cli.py`, `tests/test_indexer.py`
 - **Done when:** Index lists every fixture file under the right section with title/type/status/path/first-line; frontmatter-less file still indexed; gates pass
@@ -449,7 +449,7 @@ mint issues) → `/plan-expedite` → `/build-phase`.
 ### Step 10: Recap + status — `ss recap` / `ss status`
 - **Problem:** Complete `session.py`: `ss recap` per §4 (reads active_state/continuity/latest-3-sessions/index data; rewrites ONLY the marker block per §3.4, appends block if markers absent, preserves all other bytes) and `ss status` (stdout print, writes nothing). Tests: marker-block surgical replacement (byte-identical outside markers), marker-absent append path, status output fields.
 - **Type:** code
-- **Issue:** #
+- **Issue:** #10
 - **Flags:** --reviewers code --isolation worktree
 - **Produces:** `src/shake_spear/session.py` (complete), updated `cli.py`, `tests/test_recap_status.py`
 - **Done when:** Recap modifies only the marker block (test asserts byte equality outside it); status prints the §4 fields; gates pass
@@ -458,7 +458,7 @@ mint issues) → `/plan-expedite` → `/build-phase`.
 ### Step 11: Export — `ss export`
 - **Problem:** Complete `indexer.py`: `ss export` per §4 — concatenate `drafts/*.md` lexicographically into `exports/manuscript.md` (derived, regenerate freely) with `## <filename>` part headings; `--out` override; drafts are strictly read-only. Tests: ordering, heading insertion, empty-drafts behavior (friendly message, exit 0), drafts untouched (mtime/bytes).
 - **Type:** code
-- **Issue:** #
+- **Issue:** #11
 - **Flags:** --reviewers code --isolation worktree
 - **Produces:** `src/shake_spear/indexer.py` (complete), updated `cli.py`, `tests/test_export.py`
 - **Done when:** Export produces ordered manuscript; source drafts byte-identical after run; gates pass
@@ -467,7 +467,7 @@ mint issues) → `/plan-expedite` → `/build-phase`.
 ### Step 12: End-to-end smoke gate
 - **Problem:** One real full-cycle test with zero mocks (`tests/test_smoke_e2e.py`): in a tmp workshop, drive the installed CLI through `new-story → scene → character → world → session → index → recap → status → daily → export → list-projects`, asserting every §3.1 artifact exists, `index.md` reflects the created entities, recap block was written, and no command raised. This is the producer→consumer drift gate (templates → scaffold → creators → indexer → recap chain) — pipeline completes one real cycle without crashing; business-logic quality is out of scope.
 - **Type:** code
-- **Issue:** #
+- **Issue:** #12
 - **Flags:** --reviewers code --isolation worktree
 - **Produces:** `tests/test_smoke_e2e.py`
 - **Done when:** Smoke test passes in CI-conditions (`uv run pytest tests/test_smoke_e2e.py`) in under ~60s; full gates pass
@@ -476,7 +476,7 @@ mint issues) → `/plan-expedite` → `/build-phase`.
 ### Step 13: Committed sample story
 - **Problem:** Generate `projects/example_kids_story/` VIA the real CLI (`ss new-story "Example Kids Story" --slug example_kids_story --genre kids --mode playful --no-git`), then fill it as a worked example: completed story bible, 2 characters, 2 world elements, 2 scene cards, one short (~300-word) original example draft, 1 session log, regenerated index, one recap run. Content must be original, non-personal, publishable (this lands in the public repo).
 - **Type:** code
-- **Issue:** #
+- **Issue:** #13
 - **Flags:** --reviewers code --isolation worktree
 - **Produces:** `projects/example_kids_story/*` (committed)
 - **Done when:** Folder exists with filled files; `git status` shows it tracked (gitignore re-include works); `ss index example_kids_story` runs clean on it
@@ -485,7 +485,7 @@ mint issues) → `/plan-expedite` → `/build-phase`.
 ### Step 14: README + VS Code tasks
 - **Problem:** Author the friendly root `README.md` per seed §13 (all 9 numbered topics, example commands using `ss` + uv, the `code .` subproject flow, shared-skills usage, a short tag-conventions note) including the seed §16 first-use exercise verbatim as the recommended first session; and `.vscode/tasks.json` with tasks for `new-story` (prompted title), `session`, `index`, `recap`, `status`, `list-projects`, `export`, and `pytest`.
 - **Type:** code
-- **Issue:** #
+- **Issue:** #14
 - **Flags:** --reviewers code --isolation worktree
 - **Produces:** `README.md`, `.vscode/tasks.json`
 - **Done when:** A pytest check asserts `README.md` contains a heading for each of the 9 seed-§13 topics and the seed-§16 exercise text, and that `.vscode/tasks.json` parses as valid JSON with all listed tasks present; gates pass
@@ -497,7 +497,7 @@ mint issues) → `/plan-expedite` → `/build-phase`.
 
 ### Step M1: First real writing session (UAT)
 - **Source step:** Steps 6–14 (the whole operator workflow)
-- **Issue:** #
+- **Issue:** #15
 - **Commands:**
   ```powershell
   cd c:\Users\abero\dev\shake_spear
