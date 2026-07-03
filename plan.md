@@ -244,7 +244,7 @@ All code in `src/shake_spear/` (src layout). Stdlib only.
 |---|---|
 | `__init__.py` | `__version__` |
 | `__main__.py` | One-liner delegating to `cli.main()` so `python -m shake_spear` works (seed §5) |
-| `cli.py` | argparse parser + subcommand dispatch; resolves the optional PROJECT argument (cwd walk-up detection); maps errors to exit codes 1/2 |
+| `cli.py` | argparse parser + subcommand dispatch; maps errors to exit codes 1/2 (PROJECT resolution lives in `utils.resolve_project` — shared invariant) |
 | `utils.py` | `slugify()`, frontmatter `parse()`/`render()`, `safe_write(path, content, mode)` with explicit `mode="refuse"|"suffix"` per §3.4, `find_story_root()`, `find_workshop_root()` (walk up for `pyproject.toml` + `skills/`), template rendering (`{{placeholder}}` replace) |
 | `scaffold.py` | `new-story` (template copy, guide rendering, story-local `.claude/skills` wrapper generation, `git init` + initial commit), `list-projects` |
 | `creators.py` | `scene`, `character`, `world` (thin: template + frontmatter fill + safe_write) |
@@ -433,6 +433,7 @@ mint issues) → `/plan-expedite` → `/build-phase`.
 - **Produces:** `src/shake_spear/creators.py`, updated `cli.py`, `tests/test_creators.py`
 - **Done when:** All three commands produce correctly-named files with filled frontmatter in a scaffolded tmp story; refuse/`--force`/`.bak` exit-code tests pass; gates pass
 - **Depends on:** 6
+- **Status:** DONE (2026-07-03)
 
 ### Step 8: Sessions — `ss session` + `ss daily`
 - **Problem:** Implement `session.py` session/daily per §4: dated filename per §3.2 (`safe_write(mode="suffix")` for `_b` disambiguation), template render, active-state summary pull (Current status + Next tiny action sections), relative links to the type-relevant shared skills per the Appendix F mapping, type vocabulary with free-form fallback. Tests through the CLI incl. same-day collision and daily defaults.

@@ -13,7 +13,7 @@ import sys
 from collections.abc import Callable, Sequence
 from typing import NoReturn
 
-from shake_spear import __version__, scaffold
+from shake_spear import __version__, creators, scaffold
 from shake_spear.utils import RefuseError, UsageError
 
 PROG = "ss"
@@ -74,6 +74,39 @@ def build_parser() -> argparse.ArgumentParser:
         description="List projects/* (excluding _template): slug, title, genre, status.",
     )
     list_projects.set_defaults(func=scaffold.cmd_list_projects)
+
+    creator_funcs = {
+        "scene": creators.cmd_scene,
+        "character": creators.cmd_character,
+        "world": creators.cmd_world,
+    }
+    for kind, spec in creators.SPECS.items():
+        noun = spec.placeholder.upper()  # TITLE / NAME
+        creator = subparsers.add_parser(
+            kind,
+            help=f"create {spec.folder}/<slug>.md from templates/{spec.template}",
+            description=(
+                f"Create {spec.folder}/<slugified {spec.placeholder}>.md from "
+                f"templates/{spec.template} with the {spec.placeholder} filled into "
+                f"frontmatter. Positionals: [PROJECT] {noun} - one positional is the "
+                f"{noun} (the project is detected by walking up from the current "
+                f"directory); two positionals are PROJECT then {noun}. PROJECT accepts "
+                "a bare slug, projects/<slug>, or an absolute path. An existing target "
+                "exits 2 unless --force (which keeps a .bak- backup)."
+            ),
+        )
+        creator.add_argument(
+            "positionals",
+            nargs="*",
+            metavar=f"[PROJECT] {noun}",
+            help=f"optional project, then the {spec.placeholder} (quote multi-word values)",
+        )
+        creator.add_argument(
+            "--force",
+            action="store_true",
+            help="overwrite an existing file (a timestamped .bak- backup is kept)",
+        )
+        creator.set_defaults(func=creator_funcs[kind])
 
     return parser
 

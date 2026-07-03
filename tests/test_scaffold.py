@@ -3,9 +3,10 @@
 All scaffold tests go through the production CLI entry point — ``cli.main()``
 in-process (the exact function the ``ss`` console script calls) plus at least
 one true ``python -m shake_spear`` subprocess. tmp_path-based: each test
-builds a real tmp workshop from the repo's actual ``templates/``,
-``skills/``, root wrappers, and ``projects/_template/`` skeleton. The only
-test double is a monkeypatched ``shutil.which`` for the no-git-on-PATH branch.
+builds a real tmp workshop (shared ``workshop`` fixture in ``conftest.py``)
+from the repo's actual ``templates/``, ``skills/``, root wrappers, and
+``projects/_template/`` skeleton. The only test double is a monkeypatched
+``shutil.which`` for the no-git-on-PATH branch.
 """
 
 from __future__ import annotations
@@ -50,18 +51,6 @@ STORY_FILES = [
 EXPECTED_WRAPPERS = {
     p.stem.replace("_", "-") for p in (REPO_ROOT / "skills").glob("*.md") if p.name != "README.md"
 }
-
-
-@pytest.fixture()
-def workshop(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
-    """A tmp workshop with the real templates/skills/wrappers/skeleton; cwd inside it."""
-    root = tmp_path / "workshop"
-    root.mkdir()
-    (root / "pyproject.toml").write_text('[project]\nname = "tmp-workshop"\n', encoding="utf-8")
-    for rel in ("templates", "skills", ".claude/skills", "projects/_template"):
-        shutil.copytree(REPO_ROOT / rel, root / rel)
-    monkeypatch.chdir(root)
-    return root
 
 
 def _new_story(*extra: str) -> int:

@@ -7,7 +7,12 @@ Single source of truth for the behaviors every other module imports:
   — the hand-rolled frontmatter grammar (plan §3.3, Appendix D).
 - :func:`safe_write` — the creative-safety choke point with explicit
   ``mode="refuse" | "suffix"`` semantics (plan §3.4).
-- :func:`find_workshop_root` / :func:`find_story_root` — cwd walk-up detection.
+- :func:`find_workshop_root` / :func:`find_story_root` — cwd walk-up detection
+  — plus :func:`require_workshop_root` (raise-on-missing variant) and
+  :func:`resolve_project` (the §4 optional-PROJECT-argument contract, shared
+  by every story-targeting command).
+- :func:`reject_list_shaped` — the one guard against ``[bracketed]`` operator
+  input that would round-trip out of frontmatter as a LIST (Appendix D).
 - :func:`render_template` — ``{{placeholder}}`` replacement, no template engine.
 
 All file I/O here uses ``encoding="utf-8"`` and ``newline="\\n"`` (no BOM, no
@@ -28,8 +33,11 @@ __all__ = [
     "find_story_root",
     "find_workshop_root",
     "parse_frontmatter",
+    "reject_list_shaped",
     "render_frontmatter",
     "render_template",
+    "require_workshop_root",
+    "resolve_project",
     "safe_write",
     "slugify",
     "split_frontmatter",
@@ -63,6 +71,22 @@ _RESERVED_DEVICE_NAMES = frozenset(
 
 #: Collision suffixes for ``mode="suffix"``: ``_b`` … ``_z`` (plan §3.2).
 _SUFFIX_LETTERS = "bcdefghijklmnopqrstuvwxyz"
+
+#: A value shaped like ``[...]`` would render ``key: [X]`` in frontmatter and
+#: parse back as a LIST (Appendix D) — see :func:`reject_list_shaped`.
+_BRACKETED_VALUE_RE = re.compile(r"\[.*\]", flags=re.DOTALL)
+
+
+def reject_list_shaped(value: str, field: str) -> str:
+    """Reject operator input that would round-trip out of frontmatter as a list.
+
+    ``value`` goes into a ``{field}: {value}`` frontmatter line; a value shaped
+    ``[...]`` would parse back as a LIST under the Appendix D grammar, so it is
+    a :class:`UsageError`. Returns ``value`` unchanged when acceptable.
+    """
+    if _BRACKETED_VALUE_RE.fullmatch(value.strip()):
+        raise UsageError(f"{field} would be parsed as a list - remove the surrounding brackets")
+    return value
 
 
 def validate_slug(slug: str) -> str:
@@ -261,13 +285,75 @@ def find_workshop_root(start: Path) -> Path | None:
     return None
 
 
+def require_workshop_root(start: Path | None = None) -> Path:
+    """Walk up from ``start`` (default cwd) to the workshop root, or raise.
+
+    The shared not-a-workshop :class:`UsageError` lives here so every command
+    fails with the identical message.
+    """
+    root = find_workshop_root(start if start is not None else Path.cwd())
+    if root is None:
+        raise UsageError(
+            "not inside a shake_spear workshop (no pyproject.toml + skills/ found walking up)"
+        )
+    return root
+
+
+def _is_story_root(path: Path) -> bool:
+    """The one story-root marker check: ``story_bible.md`` + ``active_state.md`` (plan §4)."""
+    return (path / "story_bible.md").is_file() and (path / "active_state.md").is_file()
+
+
 def find_story_root(start: Path) -> Path | None:
-    """Walk up from ``start`` to a story root: ``story_bible.md`` + ``active_state.md``."""
+    """Walk up from ``start`` to a story root (see :func:`_is_story_root`)."""
     resolved = start.resolve()
     for candidate in (resolved, *resolved.parents):
-        if (candidate / "story_bible.md").is_file() and (candidate / "active_state.md").is_file():
+        if _is_story_root(candidate):
             return candidate
     return None
+
+
+def resolve_project(arg: str | None, cwd: Path) -> Path:
+    """Resolve the optional PROJECT argument to an existing story root (plan §4).
+
+    The one implementation of the §4 global convention, shared by every
+    story-targeting command (``scene``/``character``/``world`` and Steps 8-11).
+    Accepted forms for ``arg``:
+
+    - ``None`` (argument omitted) — walk up from ``cwd`` via
+      :func:`find_story_root`; not being inside a story is a
+      :class:`UsageError` (exit 1) telling the operator what to pass.
+    - absolute path — used as-is.
+    - bare slug or ``projects/<slug>`` — resolved against the workshop root's
+      ``projects/`` directory (workshop root found by walking up from ``cwd``).
+
+    Whatever form is given must name an existing story directory — one
+    containing both ``story_bible.md`` and ``active_state.md`` — else
+    :class:`UsageError`.
+    """
+    if arg is None:
+        story = find_story_root(cwd)
+        if story is None:
+            raise UsageError(
+                "no PROJECT given and the current directory is not inside a story project "
+                "(no story_bible.md + active_state.md found walking up); pass a project as "
+                "a bare slug, projects/<slug>, or an absolute path"
+            )
+        return story
+    given = Path(arg)
+    if given.is_absolute():
+        story = given
+    else:
+        # Normalize "projects/<slug>" to a bare "<slug>", then anchor at projects/.
+        if given.parts[:1] == ("projects",):
+            given = Path(*given.parts[1:]) if given.parts[1:] else Path("")
+        story = require_workshop_root(cwd) / "projects" / given
+    if not _is_story_root(story):
+        raise UsageError(
+            f"{story} is not a story project (no story_bible.md + active_state.md there); "
+            "create one with: ss new-story"
+        )
+    return story
 
 
 def render_template(template_path: Path, context: dict[str, str]) -> str:

@@ -11,7 +11,6 @@ frontmatter for each project and writes nothing.
 from __future__ import annotations
 
 import argparse
-import re
 import shutil
 import subprocess
 import sys
@@ -21,18 +20,15 @@ from shake_spear.utils import (
     Frontmatter,
     RefuseError,
     UsageError,
-    find_workshop_root,
     parse_frontmatter,
+    reject_list_shaped,
     render_frontmatter,
     render_template,
+    require_workshop_root,
     safe_write,
     slugify,
     validate_slug,
 )
-
-#: A title shaped like ``[...]`` would render ``title: [X]`` in frontmatter and
-#: parse back as a LIST (Appendix D) — rejected in :func:`new_story`.
-_BRACKETED_TITLE_RE = re.compile(r"\[.*\]", flags=re.DOTALL)
 
 #: template filename -> rendered filename inside the story (plan §3.1 / §11 Step 6).
 _STORY_FILES: dict[str, str] = {
@@ -63,20 +59,6 @@ def _wrapper_body(skill_filename: str) -> str:
 def _notice(message: str) -> None:
     """Diagnostic notice on stderr with the shared ``ss: notice:`` prefix."""
     print(f"ss: notice: {message}", file=sys.stderr)
-
-
-def _require_workshop_root(start: Path | None = None) -> Path:
-    """Walk up from ``start`` (default cwd) to the workshop root, or raise.
-
-    The shared not-a-workshop :class:`UsageError` lives here so every command
-    fails with the identical message.
-    """
-    root = find_workshop_root(start if start is not None else Path.cwd())
-    if root is None:
-        raise UsageError(
-            "not inside a shake_spear workshop (no pyproject.toml + skills/ found walking up)"
-        )
-    return root
 
 
 def _resolve_slug(title: str, slug: str | None) -> str:
@@ -197,9 +179,8 @@ def new_story(
     :func:`safe_write` force semantics (timestamped ``.bak-`` backups, all
     collected in ``backup_paths`` so the CLI can print them — plan §4).
     """
-    if _BRACKETED_TITLE_RE.fullmatch(title.strip()):
-        raise UsageError("title would be parsed as a list - remove the surrounding brackets")
-    root = _require_workshop_root(start)
+    reject_list_shaped(title, "title")
+    root = require_workshop_root(start)
     story_slug = _resolve_slug(title, slug)
     template_dir = root / "projects" / "_template"
     templates_dir = root / "templates"
@@ -277,7 +258,7 @@ def cmd_new_story(args: argparse.Namespace) -> int:
 
 def cmd_list_projects(args: argparse.Namespace) -> int:
     """``ss list-projects`` — table of slug/title/genre/status; writes nothing."""
-    root = _require_workshop_root()
+    root = require_workshop_root()
     rows = list_projects(root)
     if not rows:
         print("(no story projects yet)")
