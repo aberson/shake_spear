@@ -423,6 +423,7 @@ mint issues) → `/plan-expedite` → `/build-phase`.
 - **Produces:** `src/shake_spear/utils.py`, `scaffold.py`, updated `cli.py`, `projects/_template/*`, `tests/test_utils.py`, `tests/test_scaffold.py`
 - **Done when:** `uv run ss new-story "X" …` in a tmp workshop creates the complete §3.1 anatomy; re-run without `--force` exits 2; `--force` leaves a `.bak-`; `--no-git` skips git; all gates pass
 - **Depends on:** 2, 3, 4, 5
+- **Status:** DONE (2026-07-03)
 
 ### Step 7: Creators — `ss scene` / `ss character` / `ss world`
 - **Problem:** Implement `creators.py` per §4: each command renders its template, fills frontmatter (title/name), writes via `safe_write(mode="refuse")` into the right subfolder, honors the optional-PROJECT cwd detection and `--force`. Tests through the CLI: creation, refused overwrite exit 2 on an existing target, `--force` overwrite leaves a `.bak-` copy, cwd-detection from inside a story folder.

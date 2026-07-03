@@ -42,6 +42,16 @@ def test_build_parser_prog_is_ss() -> None:
     assert build_parser().prog == "ss"
 
 
+def test_unknown_command_prints_help_and_exits_1(capsys: pytest.CaptureFixture[str]) -> None:
+    """Plan §4: usage errors exit 1 (argparse's default of 2 is reserved for refusals)."""
+    with pytest.raises(SystemExit) as excinfo:
+        main(["bogus-command"])
+    assert excinfo.value.code == 1
+    err = capsys.readouterr().err
+    assert "usage: ss" in err
+    assert "bogus-command" in err
+
+
 def test_module_form_version_subprocess() -> None:
     result = subprocess.run(
         [sys.executable, "-m", "shake_spear", "--version"],
