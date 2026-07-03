@@ -473,6 +473,7 @@ mint issues) → `/plan-expedite` → `/build-phase`.
 - **Produces:** `src/shake_spear/indexer.py` (complete), updated `cli.py`, `tests/test_export.py`
 - **Done when:** Export produces ordered manuscript; source drafts byte-identical after run; gates pass
 - **Depends on:** 6
+- **Status:** DONE (2026-07-03)
 
 ### Step 12: End-to-end smoke gate
 - **Problem:** One real full-cycle test with zero mocks (`tests/test_smoke_e2e.py`): in a tmp workshop, drive the installed CLI through `new-story → scene → character → world → session → index → recap → status → daily → export → list-projects`, asserting every §3.1 artifact exists, `index.md` reflects the created entities, recap block was written, and no command raised. This is the producer→consumer drift gate (templates → scaffold → creators → indexer → recap chain) — pipeline completes one real cycle without crashing; business-logic quality is out of scope.
