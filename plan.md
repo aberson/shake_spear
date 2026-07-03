@@ -393,6 +393,7 @@ mint issues) → `/plan-expedite` → `/build-phase`.
 - **Produces:** 7 files under `skills/`
 - **Done when:** A pytest check asserts: all 7 files exist; each contains all six skeleton headings; `immersive_session.md` contains the six session-phase labels and all 8 mode names; `scene_planner.md` and `quick_feedback.md` contain every line of their exact seed-§8 output-format blocks. (Prose quality is judged by the `--reviewers code` gate, not the Done-when.)
 - **Depends on:** 1
+- **Status:** DONE (2026-07-03)
 
 ### Step 4: Shared skills, part 2 (genre + meta) + skills README
 - **Problem:** Author `skills/story_bible_builder.md`, `dialogue_doctor.md`, `voice_and_taste.md`, `kids_story_mode.md`, `mystery_mode.md`, `recap_and_resume.md`, `prompt_smith.md` (content per `docs/seed.md` §8, same skeleton; voice_and_taste includes the operator-fillable taste sections and the no-living-authors rule) plus `skills/README.md` explaining how to invoke skills from Claude Code (slash wrappers), plain Claude/ChatGPT (paste or reference the file), and inside a story folder.
