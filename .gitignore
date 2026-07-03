@@ -1,0 +1,19 @@
+# junk
+__pycache__/
+.pytest_cache/
+.venv/
+dist/
+build/
+.DS_Store
+.mypy_cache/
+.ruff_cache/
+
+# transient pipeline state
+.plan-expedite-state
+.plan-expedite-state.*
+
+# stories are private per-story git repos (plan §3.5); only the template
+# and the committed example live in this public repo
+projects/*
+!projects/_template/
+!projects/example_kids_story/
