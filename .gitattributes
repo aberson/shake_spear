@@ -9,3 +9,5 @@
 .gitkeep text eol=lf
 # .vscode/tasks.json is asserted UTF-8/LF/no-BOM by tests/test_readme.py
 *.json text eol=lf
+# LICENSE is extensionless, so no pattern above covers it; pin it explicitly.
+LICENSE text eol=lf
