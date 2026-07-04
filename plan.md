@@ -354,6 +354,8 @@ Tests / lint / types: `uv run pytest` · `uv run ruff check .` · `uv run mypy s
 
 ## 11. Development Process
 
+**Status:** All 14 automated steps DONE (2026-07-03; 523 tests, ruff+mypy clean, 4s smoke gate; issues #1–#14 closed, master `f81ff4a`). Remaining: Manual Step M1 (#15) — operator UAT — then `/repo-update`.
+
 Build via `/build-phase --plan shake_spear/plan.md`. All automated steps:
 `--isolation worktree`, `--reviewers code` (no runtime UI surface anywhere — a CLI
 writing markdown; runtime reviewers would have nothing to screenshot), except Step 1
