@@ -11,3 +11,5 @@
 *.json text eol=lf
 # LICENSE is extensionless, so no pattern above covers it; pin it explicitly.
 LICENSE text eol=lf
+# .gitattributes is extensionless too; pin it so it cannot materialize as CRLF.
+.gitattributes text eol=lf

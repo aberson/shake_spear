@@ -125,7 +125,10 @@ tags: []
 
 ### 3.5 Git model (public tools, private stories)
 
-- The workshop root is **one public GitHub repo** (published via `/repo-init`).
+- The workshop root is **one public GitHub repo** (published via `/repo-init`),
+  shipping an **MIT `LICENSE`** (© 2026 Abraham Robison) at its root — the tools,
+  skills, and templates are freely reusable. Real stories under `projects/` live
+  in their own private repos and are not covered by it.
 - Root `.gitignore` ignores `projects/*` with re-includes `!projects/_template/`
   and `!projects/example_kids_story/` — the template and the committed sample are
   the only stories in the public repo.

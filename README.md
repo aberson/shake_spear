@@ -187,3 +187,10 @@ During the session:
 - In VS Code, `Terminal → Run Task…` exposes the common commands (new-story,
   session, index, recap, status, list-projects, export, pytest) via
   [`.vscode/tasks.json`](.vscode/tasks.json).
+
+## License
+
+Released under the [MIT License](LICENSE) — © 2026 Abraham Robison. The
+workshop tools, skills, and templates are free to reuse. Your own stories under
+`projects/` live in their own private git repos and are never part of this
+public repo, so this license does not cover them.
