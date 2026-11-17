@@ -6,8 +6,8 @@ This file adds only local rules and never weakens them.
 
 ```text
 Lanes:           central - coordinate, ship, relay the operator (also coordinates alpha4gate and career-ops)
-                 skill-mesh - Medium article on Skill Mesh v3, in projects/dev_dispatches
-                 np-finance - general Medium article on np-finance, in projects/dev_dispatches
+                 skill-mesh - PARKED 2026-11-17 (resume doc in the private story repo: projects/dev_dispatches/docs/lanes/parked/skill-mesh.md) - Medium tool_guide article on Skill Mesh v3
+                 np-finance - PARKED 2026-11-16 (outline approved; next: operator answers P1, P2, P5-P7, P9-P12) - Medium tool_guide article on np-finance, in projects/dev_dispatches
 Coordinator:     central   (records lanes and confirms ownership transfers)
 Shipper:         central   (merges and pushes)
 Operator relay:  central
