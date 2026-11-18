@@ -28,6 +28,7 @@ own — they only point here.
 | `mystery_mode.md` | `/mystery-mode` | Mysteries: clues, red herrings, fair play, knowledge gaps |
 | `recap_and_resume.md` | `/recap-and-resume` | Stop/resume ritual: capture state, resume in minutes |
 | `prompt_smith.md` | `/prompt-smith` | Turn vague AI requests into well-formed prompts |
+| `project_naming.md` | `/project-naming` | Find a project name through varied batches and feedback that carries the shortlist forward |
 
 ## In Claude Code: slash wrappers
 
@@ -81,6 +82,27 @@ then `code .`, and the story's local guide files orient the assistant.
   read-first files (`story_bible.md`, `active_state.md`, `continuity.md`)
   live right in the story folder, so the assistant has full context without
   the workshop root open.
+
+## Naming a project
+
+Use `project_naming.md` as a separate workshop mode. From the workshop root,
+invoke `/project-naming` in Claude Code, or tell a file-reading assistant:
+
+```text
+Read skills/project_naming.md and help me name this project.
+It does ...; the name will be used by ...; the peculiar part is ...
+```
+
+Give whatever context you already have; there is no required questionnaire or
+`ss` command. A naming session needs no story scaffold. The mode reads private
+calibration under `projects/naming/` when available and otherwise works from
+the conversation. It keeps real rounds private and stops when you pick a winner.
+The [invented sample exchange](../docs/examples/project_naming.md) shows how
+mixed feedback changes the second batch.
+
+Like other skills, its wrapper is included automatically in newly scaffolded
+stories. Existing stories can point to `../../skills/project_naming.md` without
+regenerating their files. Use the workshop root for a standalone naming session.
 
 ## Picking a skill
 
